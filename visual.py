@@ -1,16 +1,24 @@
 import cv2 as cv
 from enum import Enum
 import pyautogui as gui
-from pynput import keyboard
+from pynput.keyboard import Key, Listener
 import time as t
+import utils
 
 class Game:
+
+    H_SIZE = 12
+    V_SIZE = 22
+    WHITE_COLUMN = 37
+    BROWN_COLUM = 33
+    SQUARE = 33
 
     def __init__(self):
         self.board = Board()
         self.actual_piece = 'E'
         self.next_piece = 'E'
         self.state = 1
+        self.board_coord = self.get_board_coord()
     
     def Color_piece(self, Color):
         match Color:
@@ -32,9 +40,8 @@ class Game:
                 return 'E'
 
     def get_actual_piece(self):
-            screenshot = gui.screenshot(region=(1100, 190, 1107, 230))
-            block1 = self.Color_piece(screenshot.getpixel((1106 - 1100, 191 - 190)))
-            block2 = self.Color_piece(screenshot.getpixel((1102 - 1100, 229 - 190)))
+            block1 = self.Color_piece(gui.pixel(1106, 191))
+            block2 = self.Color_piece(gui.pixel(1102, 229))
             if (block1 != 'E'):
                 print("Current Block found : " + block1)
                 self.actual_piece = block1
@@ -43,15 +50,44 @@ class Game:
                 self.actual_piece = block2
 
     def get_next_piece(self):
-            screenshot = gui.screenshot(region=(712, 544, 716, 579))
-            block1 = self.Color_piece(screenshot.getpixel((713 - 712, 545 - 544)))
-            block2 = self.Color_piece(screenshot.getpixel((715 - 712, 578 - 544)))
+            block1 = self.Color_piece(gui.pixel(713, 545))
+            block2 = self.Color_piece(gui.pixel(715, 578))
             if (block1 != 'E'):
                 print("Next Block found : " + block1)
                 self.s_piece = block1
             if (block2 != 'E' and block1 == 'E'):
                 print("Next Block found : " + block2)
                 self.s_piece = block2
+        
+    def get_board_coord(self):
+        while(1):
+            try:
+                Coord = gui.locateOnScreen('game.png', grayscale=True, confidence=0.9)
+                print("Success : Board found")
+                return (Coord)
+            except:
+                print("Fail during board recognition, trying again in 3 seconds...")
+                t.sleep(3)
+
+    def is_empty_cell(self, x, y):
+        #get down right corner
+        screen_x = self.board_coord.left + self.board_coord.width
+        screen_y = self.board_coord.top + self.board_coord.height
+        #Offset to wanted piece
+        for i in range(Game.H_SIZE, x, -1):
+            if (i % 2 == 0):
+                screen_x -= Game.WHITE_COLUMN
+            else:
+                screen_x -= Game.BROWN_COLUM
+        for j in range(Game.V_SIZE, y, -1):
+            screen_y -= Game.SQUARE
+        #Offset to center of the piece
+        screen_x += Game.SQUARE / 2
+        screen_y -= Game.SQUARE / 2
+        #DEV
+        gui.moveTo(screen_x, screen_y)
+        return (self.Color_piece(gui.pixel(int(screen_x), int(screen_y))))
+        
 
 class Board:
     #Block vide -> 0
@@ -63,9 +99,9 @@ class Board:
 
     def createBoard(self):
         mat = []
-        for i in range(21):
+        for i in range(Game.V_SIZE):
             row = []
-            for j in range(12):
+            for j in range(Game.H_SIZE):
                 row.append(0)
             mat.append(row)
         return mat
