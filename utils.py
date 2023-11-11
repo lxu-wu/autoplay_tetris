@@ -67,7 +67,7 @@ def test5():
             [0,1,1,1], \
             [0,1,1,1]])  
  
-def all_tests():
+def clear_tests():
     print("Launching Tests")
     test1()
     test2()
@@ -76,4 +76,4 @@ def all_tests():
     test5()
     print("Success")
 if (__name__ == "__main__"):
-    all_tests()
+    clear_tests()

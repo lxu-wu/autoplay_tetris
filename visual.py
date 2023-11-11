@@ -69,7 +69,7 @@ class Game:
                 print("Fail during board recognition, trying again in 3 seconds...")
                 t.sleep(3)
 
-    def is_empty_cell(self, x, y):
+    def get_cell(self, x, y):
         #get down right corner
         screen_x = self.board_coord.left + self.board_coord.width
         screen_y = self.board_coord.top + self.board_coord.height
@@ -85,9 +85,17 @@ class Game:
         screen_x += Game.SQUARE / 2
         screen_y -= Game.SQUARE / 2
         #DEV
-        gui.moveTo(screen_x, screen_y)
+        #gui.moveTo(screen_x, screen_y)
         return (self.Color_piece(gui.pixel(int(screen_x), int(screen_y))))
-        
+
+    def insert_piece(self, x, y, direction):
+        while (self.get_cell(x, y) == 'E'):
+            t.sleep(0.01) #NEED TESTING
+        old_piece = self.actual_piece
+        while (self.actual_piece == old_piece):
+            gui.press(direction)
+
+
 
 class Board:
     #Block vide -> 0
