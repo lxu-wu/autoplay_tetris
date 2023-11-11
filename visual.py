@@ -94,6 +94,7 @@ class Game:
         old_piece = self.actual_piece
         while (self.actual_piece == old_piece):
             gui.press(direction)
+            t.sleep(0.01) #NEED TESTING
 
 
 
