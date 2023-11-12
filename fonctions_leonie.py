@@ -95,8 +95,7 @@ matrice_3 =[[2,2,2,2,0,2,0],
 			[1,1,1,2,2,0,1],
 			[2,2,2,1,2,0,1],
 			[1,2,1,1,1,0,1]]
-piece=[[0,2,0],
-	   [2,2,2]]
+
 
 
 J = [[2,0,0],\
@@ -159,16 +158,24 @@ def placement_piece(matrice_before, matrice_after, piece):
 	if piece==I:
 		if len(piece_after)==4:
 			actions.append('up')
+			largeur=1
+		else:
+			largeur=4
 
 	if piece == O: #fini
+		largeur=2
 		pass
+	
 
 	if piece == L: #fini
 		if len(piece_after)==2:
+			largeur=3
 			if piece_after[0]==[2,2,2]:
 				actions.append('up')
 				actions.append('up')
+				
 		else:
+			largeur=2
 			if (total_index[0][0],total_index[0][1]) == (total_index[1][0],total_index[1][1]+1):
 				actions.append('up')
 
@@ -178,11 +185,14 @@ def placement_piece(matrice_before, matrice_after, piece):
 				actions.append('up')	
 
 	if piece == J: #fini
+		
 		if len(piece_after)==2:
+			largeur=3
 			if piece_after[0]==[2,2,2]:
 				actions.append('up')
 				actions.append('up')
 		else:
+			largeur=2
 			if (total_index[0][0],total_index[0][1]) == (total_index[1][0],total_index[1][1]+1):
 				actions.append('up')
 				actions.append('up')
@@ -191,11 +201,13 @@ def placement_piece(matrice_before, matrice_after, piece):
 				actions.append('up')
 
 	if piece == T: #fini
+		largeur=3
 		if piece_after[0]==[2,2,2]:
 			actions.append('up')
 			actions.append('up')
 
 		elif len(piece)==3:
+			largeur=2
 			if total_index[0][1]!=total_index[1][1]:
 				actions.append('up')
 			elif total_index[0][1]==total_index[1][1]:
@@ -204,10 +216,67 @@ def placement_piece(matrice_before, matrice_after, piece):
 				actions.append('up')
 
 	if piece == Z:
+		largeur=3
 		if len(piece_after)==3:
-			actions.append("up")
+			largeur=2
+			actions.append('up')
 		
 	if piece == S:
+		largeur=3
 		if len(piece_after)==3:
-			actions.append("up")
+			largeur = 2
+			actions.append('up')
+	return actions
+			
+def rotations(matrice_before, matrice_after, piece):
+	total_index=[]
+	row_piece=[]
+	actions=[]
+	matrice_bis_before = []
+	matrice_bis_after = []
 
+	#Copy both matrices
+	for rows in matrice_before:
+		matrice_bis_before.append(rows)
+	for rows in matrice_after:
+		matrice_bis_after.append(rows)
+	#Replace every 1 in both bis_matrices to 0
+	for rows in matrice_bis_before:
+		for i in range (len(rows)):
+			if rows[i]==1:
+				rows[i]=0
+	for rows in matrice_bis_after:
+		for i in range (len(rows)):
+			if rows[i]==1:
+				rows[i]=0
+
+	#Find difference between the two matrices
+	for i in range(len(matrice_before)):
+		for j in range(len(matrice_bis_before[i])):
+			if matrice_bis_before[i][j]!=matrice_bis_after[i][j]:
+				row_piece.append(matrice_bis_after[i][j])
+				total_index.append((i,j))
+				
+	actions = placement_piece(matrice_before, matrice_after, piece)
+	for i in range(12): #déplacement après rotation, pour être sures on se déplace beeeeeeeaucoup vers la gauche
+		actions.append('left') 
+	column_index=[]
+	row_index=[]
+	for indexes in total_index:
+		column_index.append(indexes[1])
+	for indexes in total_index:
+		row_index.append(indexes[0])
+
+	coin_bas_gauche=min(column_index)
+	row_index_min=min(row_index)
+	
+	for i in range(len(matrice_before[0])):
+		for j in range(len(matrice_before)-1):
+			if row_index_min==j+1:
+				position=(j,i)
+				print(1)
+				return position
+				
+			elif matrice_before[j+1][i]==2:
+				break
+	
