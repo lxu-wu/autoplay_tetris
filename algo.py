@@ -33,14 +33,9 @@ class Algo:
     curr = None
     next = None
     tmpPossible = []
-    possibilities = []
-    possibilities_first = []
-    possibilities_second = []
-    possibilities_first_save = []
-    possibilities_second_save = []
 
     
-    def __init__(self, curr, next, matrice):
+    def __init__(self, current, next2, matrice):
         
         #Conver letter to matrice of piece
         def letter_to_piece_matrice(letter):
@@ -60,9 +55,11 @@ class Algo:
                 case _:
                     return(Z)
 
-        self.curr = letter_to_piece_matrice(curr)
-        self.next = letter_to_piece_matrice(next)
+        self.curr = letter_to_piece_matrice(current)
+        self.next = letter_to_piece_matrice(next2)
         self.matrice = matrice
+        self.possibilities = []
+        self.possibilities_second = []
 
     def place_piece_and_create_list(self):
         self.place_piece_on_piece_all_rotate(self.curr, self.matrice)
@@ -191,13 +188,15 @@ class Algo:
     
     def send_best_map(self):
         best_map = self.choose_best_map()
-
+        
         map_without_ones = change_ones_to_zeros(copy.deepcopy(self.possibilities_second_save[best_map[2]]))
 
         for matrice in self.possibilities_first_save:
-            substract = substract_matrice(map_without_ones, copy.deepcopy(matrice))
+          
+            substract = substract_matrice(map_without_ones, change_ones_to_zeros(copy.deepcopy(matrice)))
             if only_zeros_and_twos(substract):
                 return matrice
+        print("±±±±±±±±±±±±±±±±±±±±±±±TU EST UN CONNARD±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±")
 
 
     def choose_best_map(self):
@@ -297,63 +296,48 @@ class Algo:
 
         return somme
     
-    def placement_piece(self,matrice_before, matrice_after, piece):
+    def rotations_(self,matrice_before, matrice_after, piece):
         total_index=[]
         row_piece=[]
         piece_after=[]
         actions=[]
-        matrice_bis_before = []
-        matrice_bis_after = []
+        matrice_bis_before = copy.deepcopy(matrice_before)
+        matrice_bis_after = copy.deepcopy(matrice_after)
 
-        #Copy both matrices
-        for rows in matrice_before:
-            matrice_bis_before.append(rows)
-        for rows in matrice_after:
-            matrice_bis_after.append(rows)
-        #Replace every 1 in both bis_matrices to 0
-        for rows in matrice_bis_before:
-            for i in range (len(rows)):
-                if rows[i]==1:
-                    rows[i]=0
-        for rows in matrice_bis_after:
-            for i in range (len(rows)):
-                if rows[i]==1:
-                    rows[i]=0
-
+        #Change the 1 into 0
+        for i in range(len(matrice_bis_before)):
+            matrice_bis_before[i] = [0 if x == 1 else x for x in matrice_bis_before[i]]
+            matrice_bis_after[i] = [0 if x == 1 else x for x in matrice_bis_after[i]]
         #Find difference between the two matrices
         for i in range(len(matrice_before)):
             for j in range(len(matrice_bis_before[i])):
+                
                 if matrice_bis_before[i][j]!=matrice_bis_after[i][j]:
                     row_piece.append(matrice_bis_after[i][j])
                     total_index.append((i,j))
             if row_piece!=[]:
                 piece_after.append(row_piece)
                 row_piece=[]
-        # print(piece_after)
+        print(piece_after)
         # print(total_index)
 
         #Find which rotations has been applied
         if piece==I:
             if len(piece_after)==4:
                 actions.append('up')
-                largeur=1
-            else:
-                largeur=4
 
-        if piece == O: #fini
-            largeur=2
+        if piece == O: 
             pass
         
 
-        if piece == L: #fini
+        if piece == L: 
             if len(piece_after)==2:
-                largeur=3
+
                 if piece_after[0]==[2,2,2]:
                     actions.append('up')
                     actions.append('up')
                     
             else:
-                largeur=2
                 if (total_index[0][0],total_index[0][1]) == (total_index[1][0],total_index[1][1]+1):
                     actions.append('up')
 
@@ -362,15 +346,15 @@ class Algo:
                     actions.append('up')
                     actions.append('up')	
 
-        if piece == J: #fini
+        if piece == J: 
             
             if len(piece_after)==2:
-                largeur=3
+                
                 if piece_after[0]==[2,2,2]:
                     actions.append('up')
                     actions.append('up')
             else:
-                largeur=2
+                
                 if (total_index[0][0],total_index[0][1]) == (total_index[1][0],total_index[1][1]+1):
                     actions.append('up')
                     actions.append('up')
@@ -378,14 +362,14 @@ class Algo:
                 else:
                     actions.append('up')
 
-        if piece == T: #fini
-            largeur=3
+        if piece == T: 
+            
             if piece_after[0]==[2,2,2]:
                 actions.append('up')
                 actions.append('up')
 
-            elif len(piece)==3:
-                largeur=2
+            elif len(piece_after)==3:
+                
                 if total_index[0][1]!=total_index[1][1]:
                     actions.append('up')
                 elif total_index[0][1]==total_index[1][1]:
@@ -394,19 +378,16 @@ class Algo:
                     actions.append('up')
 
         if piece == Z:
-            largeur=3
+            
             if len(piece_after)==3:
-                largeur=2
                 actions.append('up')
             
         if piece == S:
-            largeur=3
             if len(piece_after)==3:
-                largeur = 2
                 actions.append('up')
         return actions
                 
-    def rotations(self, matrice_before, matrice_after, piece):
+    def deplacement_pieces(self, matrice_before, matrice_after, piece):
         total_index=[]
         row_piece=[]
         actions=[]
@@ -435,26 +416,33 @@ class Algo:
                     row_piece.append(matrice_bis_after[i][j])
                     total_index.append((i,j))
     
-        actions = self.placement_piece(matrice_before, matrice_after, piece)
+        actions = self.rotations_(matrice_before, matrice_after, piece)
         for i in range(12): #déplacement après rotation, pour être sures on se déplace beeeeeeeaucoup vers la gauche
             actions.append('left') 
+        special_insertion = False
+        for i,j in total_index:
+            if (matrice_before[i][j] != 0):
+                special_insertion = True
 
         column_index=[]
         row_index=[]  
         for indexes in total_index:
             column_index.append(indexes[1])
             row_index.append(indexes[0])
-        row_index_min=min(row_index)
-        
-        for i in range(len(matrice_before[0])):
-            for j in range(len(matrice_before)-1):
-                if row_index_min==j+1:
-                    position=(j,i)
-                    return (actions, position)
-                    
-                elif matrice_before[j+1][i]==2:
-                    break
-        return(actions, (0, 0)) #TODO
+        #row_index_min=min(row_index)
+        #if special_insertion: 
+        #    for i in range(len(matrice_before[0])):
+        #        for j in range(len(matrice_before)-1):
+        #            if row_index_min==j+1:
+        #                position=(i,j)
+        #               return (actions, position, "left" if column_index > j else "right")
+                        
+        #            elif matrice_before[j+1][i]==2:
+        #                break
+        for i in range(min(column_index)):
+            actions.append("right")
+        actions.append("space")
+        return(actions, (0, 0), None) #TODO
 
 # Hauteur = 10
 # Largeur = 4
