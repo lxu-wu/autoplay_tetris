@@ -192,8 +192,10 @@ class Algo:
     def send_best_map(self):
         best_map = self.choose_best_map()
 
+        map_without_ones = change_ones_to_zeros(copy.deepcopy(self.possibilities_second_save[best_map[2]]))
+
         for matrice in self.possibilities_first_save:
-            substract = substract_matrice(self.possibilities_second_save[best_map[2]], matrice)
+            substract = substract_matrice(map_without_ones, copy.deepcopy(matrice))
             if only_zeros_and_twos(substract):
                 return matrice
 
