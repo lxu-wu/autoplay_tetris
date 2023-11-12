@@ -196,10 +196,11 @@ class Algo:
 
         for matrice in self.possibilities_first_save:
             substract = substract_matrice(map_without_ones, change_ones_to_zeros(copy.deepcopy(matrice)))
-            if only_zeros_and_twos(substract):
+            
+            
+            if match_pattern(substract, self.next_piece):
                 return matrice
         print("±±±±±±±±±±±±±±±±±±±±±±±TU EST UN CONNARD±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±")
-
 
 
     def choose_best_map(self):
@@ -458,34 +459,56 @@ class Algo:
                     break
         return(actions, (0, 0)) #TODO
 
-# Hauteur = 10
-# Largeur = 4
+# Hauteur = 22
+# Largeur = 12
 # matrice_grande = [[0  for _ in range(Largeur)] for _ in range(Hauteur)]
 
-# # for i in matrice_grande:
-# #     print(i)
+# # # for i in matrice_grande:
+# # #     print(i)
 
-# # for i in matrice_grande:
-# #     print(i, end='\n')
-# # print('')
+# # # for i in matrice_grande:
+# # #     print(i, end='\n')
+# # # print('')
 
-# al = algo(T, I, matrice_grande)
-# al.place_one_pixel(0, 4, al.matrice)
-# al.place_one_pixel(1, 4, al.matrice)
+# al = Algo("Z", "O", copy.deepcopy(matrice_grande))
+# al.place_one_pixel(0, 21, al.matrice)
+# al.place_one_pixel(1, 21, al.matrice)
+# al.place_one_pixel(2, 21, al.matrice)
+# al.place_one_pixel(1, 20, al.matrice)
+
+# # al.actions_rotatation_position(matrice_grande, al.matrice, 0)
 # al.place_piece_and_create_list()
 
-# for a in al.possibilities_second:
-#     for i in a:
-#         print(i)
-#     print('')
-# #     # break
+# # for a in al.matrice:
+# #     print(a)
 
-# print(len(al.possibilities_second))
+# # print()
 
-# for m1 in al.possibilities_second:
-#     for m2 in al.possibilities_second:
-#         if m1 != m2:
-#             if comparer_matrices(m1, m2):
-#                 print(m1)
-#                 print(m2)
+# map = al.send_best_map()
+
+# # for a in map:
+# #     print(a)
+
+# print()
+
+# al = Algo("I", "T", map)
+# al.place_piece_and_create_list()
+
+# # for a in al.send_best_map():
+# #     print(a)
+# # for a in al.possibilities_first:
+# #     # print(a)
+# #     for i in a:
+# #         print(i)
+# #     print()
+# # #     # break
+
+# # print(len(al.possibilities_second))
+
+# # for m1 in al.possibilities_second:
+# #     for m2 in al.possibilities_second:
+# #         if m1 != m2:
+# #             if comparer_matrices(m1, m2):
+# #                 print(m1)
+# #                 print(m2)
     

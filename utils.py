@@ -1,5 +1,27 @@
 #from visual import Game
 
+import numpy as np
+
+def match_pattern(big_matrix, small_matrix):
+    # Get the shape of the small matrix
+    small_rows, small_cols = small_matrix.shape
+
+    # Get the shape of the big matrix
+    big_rows, big_cols = big_matrix.shape
+
+    # Iterate over the big matrix
+    for i in range(big_rows - small_rows + 1):
+        for j in range(big_cols - small_cols + 1):
+            # Extract a sub-matrix from the big matrix
+            sub_matrix = big_matrix[i:i+small_rows, j:j+small_cols]
+
+            # Check if the sub-matrix matches the small matrix or any of its rotations
+            for _ in range(4):
+                if np.array_equal(sub_matrix * small_matrix, small_matrix):
+                    print(f"Match found at position ({i}, {j})")
+                    break
+                small_matrix = np.rot90(small_matrix)  # Rotate the small matrix
+
 def is_full(line):
     for val in line:
         if val != 2:
