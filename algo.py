@@ -192,9 +192,10 @@ class Algo:
         map_without_ones = change_ones_to_zeros(copy.deepcopy(self.possibilities_second_save[best_map[2]]))
 
         for matrice in self.possibilities_first_save:
-          
             substract = substract_matrice(map_without_ones, change_ones_to_zeros(copy.deepcopy(matrice)))
-            if only_zeros_and_twos(substract):
+            
+            
+            if match_pattern(substract, self.next_piece):
                 return matrice
         print("±±±±±±±±±±±±±±±±±±±±±±±TU EST UN CONNARD±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±")
 
@@ -444,9 +445,9 @@ class Algo:
         actions.append("space")
         return(actions, (0, 0), None) #TODO
 
-# Hauteur = 10
-# Largeur = 4
-# matrice_grande = [[0  for _ in range(Largeur)] for _ in range(Hauteur)]
+Hauteur = 22
+Largeur = 12
+matrice_grande = [[0  for _ in range(Largeur)] for _ in range(Hauteur)]
 
 # # for i in matrice_grande:
 # #     print(i)
@@ -455,15 +456,37 @@ class Algo:
 # #     print(i, end='\n')
 # # print('')
 
-# al = algo(T, I, matrice_grande)
-# al.place_one_pixel(0, 4, al.matrice)
-# al.place_one_pixel(1, 4, al.matrice)
-# al.place_piece_and_create_list()
+al = Algo("Z", "O", copy.deepcopy(matrice_grande))
+al.place_one_pixel(0, 21, al.matrice)
+al.place_one_pixel(1, 21, al.matrice)
+al.place_one_pixel(2, 21, al.matrice)
+al.place_one_pixel(1, 20, al.matrice)
 
-# for a in al.possibilities_second:
+# al.actions_rotatation_position(matrice_grande, al.matrice, 0)
+al.place_piece_and_create_list()
+
+# for a in al.matrice:
+#     print(a)
+
+# print()
+
+map = al.send_best_map()
+
+# for a in map:
+#     print(a)
+
+print()
+
+al = Algo("I", "T", map)
+al.place_piece_and_create_list()
+
+# for a in al.send_best_map():
+#     print(a)
+# for a in al.possibilities_first:
+#     # print(a)
 #     for i in a:
 #         print(i)
-#     print('')
+#     print()
 # #     # break
 
 # print(len(al.possibilities_second))
