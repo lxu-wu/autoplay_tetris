@@ -12,13 +12,13 @@ class Game:
     WHITE_COLUMN = 37
     BROWN_COLUM = 33
     SQUARE = 33
-
+	
     def __init__(self):
-        self.board = Board()
         self.actual_piece = 'E'
         self.next_piece = 'E'
         self.state = 1
         self.board_coord = None
+        self.matrice = [[0  for _ in range(Game.H_SIZE)] for _ in range(Game.V_SIZE)]
         self.get_visual_data()
 
     def Color_piece(self, Color):
@@ -107,19 +107,11 @@ class Game:
         if (t.time() - start >= 3):
             print("TIMEOUT PIECES NOT FOUND")
 
-class Board:
-    #Block vide -> 0
-    #Block vide mais toit -> 1
-    #Block rempli -> 2
-
-    def __init__(self):
-        self.board = self.createBoard()
-
-    def createBoard(self):
-        mat = []
-        for i in range(Game.V_SIZE):
-            row = []
-            for j in range(Game.H_SIZE):
-                row.append(0)
-            mat.append(row)
-        return mat
+    def update_pieces(self):
+        start = t.time()
+        old_piece = self.actual_piece
+        while (old_piece == self.actual_piece and t.time() - start < 3):
+            self.get_actual_piece()
+            self.get_next_piece()
+        if (t.time() - start >= 3):
+            print("TIMEOUT PIECES NOT FOUND")

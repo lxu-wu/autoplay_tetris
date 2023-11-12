@@ -27,7 +27,7 @@ T = [[0,2,0],\
 
 I = [[2,2,2,2]]
 
-class algo:
+class Algo:
     
     matrice = None
     curr = None
@@ -416,6 +416,7 @@ class algo:
         actions = self.placement_piece(matrice_before, matrice_after, piece)
         for i in range(12): #déplacement après rotation, pour être sures on se déplace beeeeeeeaucoup vers la gauche
             actions.append('left') 
+
         column_index=[]
         row_index=[]
         for indexes in total_index:
@@ -430,8 +431,7 @@ class algo:
             for j in range(len(matrice_before)-1):
                 if row_index_min==j+1:
                     position=(j,i)
-                    print(1)
-                    return position
+                    return (actions, position)
                     
                 elif matrice_before[j+1][i]==2:
                     break
