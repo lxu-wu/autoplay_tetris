@@ -195,9 +195,11 @@ class Algo:
         map_without_ones = change_ones_to_zeros(copy.deepcopy(self.possibilities_second_save[best_map[2]]))
 
         for matrice in self.possibilities_first_save:
-            substract = substract_matrice(map_without_ones, copy.deepcopy(matrice))
+            substract = substract_matrice(map_without_ones, change_ones_to_zeros(copy.deepcopy(matrice)))
             if only_zeros_and_twos(substract):
                 return matrice
+        print("±±±±±±±±±±±±±±±±±±±±±±±TU EST UN CONNARD±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±")
+
 
 
     def choose_best_map(self):
