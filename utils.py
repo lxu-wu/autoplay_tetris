@@ -19,6 +19,14 @@ def clear(board):
             board.remove(board[index])
             board.insert(0,[0 for i in range(x)])
 
+def comparer_matrices(matrice1, matrice2):
+    if len(matrice1) != len(matrice2) or len(matrice1[0]) != len(matrice2[0]):
+        return False
+    for i in range(len(matrice1)):
+        for j in range(len(matrice1[0])):
+            if matrice1[i][j] != matrice2[i][j]:
+                return False
+
 def test1():
     test = [[0,0,2,0], \
              [2,2,2,2], \
