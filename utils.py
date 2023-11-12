@@ -7,8 +7,9 @@ def is_full(line):
     return True
 
 def clear(board):
-    y = 3
-    x = 4 
+    #Change to y = 3 and x = 4 for testing
+    y = Game.V_SIZE
+    x = Game.H_SIZE
     for index,line in enumerate(board):
         if is_full(line):
             for i in range (index, y):
