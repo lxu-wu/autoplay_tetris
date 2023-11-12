@@ -63,9 +63,9 @@ class Game:
     def get_board_coord(self):
         while(1):
             try:
-                Coord = gui.locateOnScreen('game.png', grayscale=True, confidence=0.9)
+                self.board_coord = gui.locateOnScreen('game.png', grayscale=True, confidence=0.9)
                 print("Success : Board found")
-                return (Coord)
+                break
             except:
                 print("Fail during board recognition, trying again in 3 seconds...")
                 t.sleep(3)
@@ -100,6 +100,7 @@ class Game:
 
     def get_visual_data(self):
         self.get_board_coord()
+        gui.click(self.board_coord.left + 160, self.board_coord.top + 90)
         start = t.time()
         while (self.actual_piece == 'E' and self.next_piece == 'E' and t.time() - start < 3):
             self.get_actual_piece()

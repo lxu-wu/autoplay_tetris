@@ -41,8 +41,10 @@ def only_zeros_and_twos(matrice):
 def substract_matrice(matrice1, matrice2):
     ret_matrice = []
     for i in range(len(matrice1)):
+        row = []
         for j in range(len(matrice1[0])):
-            ret_matrice = matrice1[i][j] - matrice2[i][j]
+            row.append(matrice1[i][j] - matrice2[i][j])
+        ret_matrice.append(row)
     return ret_matrice
 
 def test1():

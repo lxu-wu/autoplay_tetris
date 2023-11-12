@@ -41,10 +41,28 @@ class Algo:
 
     
     def __init__(self, curr, next, matrice):
-        self.curr = curr
-        self.next = next
-        self.matrice = matrice
+        
+        #Conver letter to matrice of piece
+        def letter_to_piece_matrice(letter):
+            match letter:
+                case ('I'):
+                    return(I)
+                case ('T'):
+                    return(T)
+                case ('J'):
+                    return(J)
+                case ('S') :
+                    return(S)
+                case ('O'):
+                    return(O)
+                case ('L'):
+                    return(L)
+                case _:
+                    return(Z)
 
+        self.curr = letter_to_piece_matrice(curr)
+        self.next = letter_to_piece_matrice(next)
+        self.matrice = matrice
 
     def place_piece_and_create_list(self):
         self.place_piece_on_piece_all_rotate(self.curr, self.matrice)
@@ -135,10 +153,10 @@ class Algo:
         while i < hauteur:
             for j in range(PLargeur):
                 if matrice[i][x + j] == 2:
-                    print('1')
+                    #print('1')
                     return i - PHauteur
             i += 1
-        print('2')
+       # print('2')
         return i - PHauteur
 
     def check_can_place_under_shadow(self, x, y, PHauteur, PLargeur, piece, matrice):
@@ -186,6 +204,8 @@ class Algo:
 
         for i in range(len(self.possibilities_second)):
             score = self.scoring(self.possibilities_second[i])
+            if best_map == (None, None, None):
+                best_map = (self.possibilities_second[i], score, i)
             if score < best_map[1]:
                 best_map = (self.possibilities_second[i], score, i)
         
@@ -195,7 +215,7 @@ class Algo:
     def scoring(self, matrice):
         somme_hauteur = self.nombres_de_un(matrice)
         trous = self.valeurs_des_trous(matrice)
-        ombre = self.ombre(matrice)
+        ombre = self.nombres_de_un(matrice)
 
         sumTrous = sum(trous)
 
@@ -307,8 +327,8 @@ class Algo:
             if row_piece!=[]:
                 piece_after.append(row_piece)
                 row_piece=[]
-        print(piece_after)
-        print(total_index)
+        # print(piece_after)
+        # print(total_index)
 
         #Find which rotations has been applied
         if piece==I:
@@ -407,24 +427,21 @@ class Algo:
                     rows[i]=0
 
         #Find difference between the two matrices
-        for i in range(len(matrice_before)):
+        for i in range(len(matrice_bis_before)):
             for j in range(len(matrice_bis_before[i])):
-                if matrice_bis_before[i][j]!=matrice_bis_after[i][j]:
+                if matrice_bis_before[i][j] != matrice_bis_after[i][j]:
                     row_piece.append(matrice_bis_after[i][j])
                     total_index.append((i,j))
-                    
+    
         actions = self.placement_piece(matrice_before, matrice_after, piece)
         for i in range(12): #déplacement après rotation, pour être sures on se déplace beeeeeeeaucoup vers la gauche
             actions.append('left') 
 
         column_index=[]
-        row_index=[]
+        row_index=[]  
         for indexes in total_index:
             column_index.append(indexes[1])
-        for indexes in total_index:
             row_index.append(indexes[0])
-
-        coin_bas_gauche=min(column_index)
         row_index_min=min(row_index)
         
         for i in range(len(matrice_before[0])):
@@ -435,6 +452,7 @@ class Algo:
                     
                 elif matrice_before[j+1][i]==2:
                     break
+        return(actions, (0, 0)) #TODO
 
 # Hauteur = 10
 # Largeur = 4
