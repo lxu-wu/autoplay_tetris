@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import time
 import copy
 from utils import *
@@ -6,25 +7,25 @@ HAUTEUR_MUL = 1
 OMBRE_MUL = 2
 TROUS_MUL = 3
 
-J = [["🍞",'🤍','🤍'],\
-     ["🍞","🍞","🍞"]]
+J = [[2,0,0],\
+     [2,2,2]]
 
-L = [['🤍','🤍',"🍞"],\
-     ["🍞","🍞","🍞"]]
+L = [[0,0,2],\
+     [2,2,2]]
 
-O = [["🍞","🍞"],\
-     ["🍞","🍞"]]
+O = [[2,2],\
+     [2,2]]
 
-S = [['🤍',"🍞","🍞"],\
-     ["🍞","🍞",'🤍']]
+S = [[0,2,2],\
+     [2,2,0]]
 
-Z = [["🍞","🍞",'🤍'],\
-     ['🤍',"🍞","🍞"]]
+Z = [[2,2,0],\
+     [0,2,2]]
 
-T = [['🤍',"🍞",'🤍'],\
-     ["🍞","🍞","🍞"]]
+T = [[0,2,0],\
+     [2,2,2]]
 
-I = [["🍞","🍞","🍞","🍞"]]
+I = [[2,2,2,2]]
 
 class algo:
     
@@ -110,9 +111,9 @@ class algo:
             for yPiece in range(Hauteur)[::-1]:
                 for xPiece in range(Largeur):
                     # self.place_one_pixel(x + xPiece, y + yPiece, matrice)
-                        if piece[yPiece][xPiece] == "🍞"  and matrice[y + yPiece][x + xPiece] != "🍞" :
+                        if piece[yPiece][xPiece] == 2  and matrice[y + yPiece][x + xPiece] != 2 :
                             self.place_one_pixel(x + xPiece, y + yPiece, matrice)
-                        elif piece[yPiece][xPiece] == "🍞"  and matrice[y + yPiece][x + xPiece] == "🍞" :
+                        elif piece[yPiece][xPiece] == 2  and matrice[y + yPiece][x + xPiece] == 2 :
                             return 0
                         # for i in matrice:
                         #     print(i)
@@ -124,7 +125,7 @@ class algo:
     def check_playable(self, x, y, PHauteur, PLargeur, piece, matrice):
         for i in range(PHauteur)[::-1]:
             for j in range(PLargeur):
-                if piece[i][j] == "🍞" and matrice[y + i][x + j] == "🍞":
+                if piece[i][j] == 2 and matrice[y + i][x + j] == 2:
                     return 0
         return 1
 
@@ -133,7 +134,7 @@ class algo:
         hauteur = len(matrice)
         while i < hauteur:
             for j in range(PLargeur):
-                if matrice[i][x + j] == "🍞":
+                if matrice[i][x + j] == 2:
                     print('1')
                     return i - PHauteur
             i += 1
@@ -145,11 +146,11 @@ class algo:
         overShadow = 0
         largeur = len(matrice[0])
         while i < largeur:
-            if (matrice[y][x + i] == '🤍'):
+            if (matrice[y][x + i] == 0):
                 overShadow += 1
             elif matrice[y][x + i] == 1:
                 overShadow = 0
-            elif matrice[y][x + i] == "🍞":
+            elif matrice[y][x + i] == 2:
                 overShadow = 0
             if overShadow >= PLargeur:
                 return 1
@@ -160,11 +161,11 @@ class algo:
     def place_one_pixel(self, x, y, matrice):
         Hauteur = len(matrice)
         # print(Hauteur, y)
-        matrice[y][x] = "🍞"
+        matrice[y][x] = 2
 
         for i in range(y + 1, Hauteur):
-            if matrice[i][x] == '🤍':
-                matrice[i][x] = '🔌'
+            if matrice[i][x] == 0:
+                matrice[i][x] = 1
     
     def rotate_piece(self, piece):
         piece_pivotee = [[piece[j][i] for j in range(len(piece))] for i in range(len(piece[0])-1, -1, -1)]
@@ -269,37 +270,34 @@ class algo:
         somme=0
         for num_rows in range(len(matrice)):
             for num_columns in range(len(matrice[0])):
-                if matrice[num_rows][num_columns]=="🍞": #je check si la case est remplie ou pas
+                if matrice[num_rows][num_columns]==2: #je check si la case est remplie ou pas
                     somme+=len(matrice)-num_rows #comme on commence par le haut il faut faire 21-la rangée
 
         return somme
 
+# Hauteur = 10
+# Largeur = 4
+# matrice_grande = [[0  for _ in range(Largeur)] for _ in range(Hauteur)]
 
+# # for i in matrice_grande:
+# #     print(i)
 
+# # for i in matrice_grande:
+# #     print(i, end='\n')
+# # print('')
 
-Hauteur = 10
-Largeur = 4
-matrice_grande = [["🤍"  for _ in range(Largeur)] for _ in range(Hauteur)]
+# al = algo(T, I, matrice_grande)
+# al.place_one_pixel(0, 4, al.matrice)
+# al.place_one_pixel(1, 4, al.matrice)
+# al.place_piece_and_create_list()
 
-# for i in matrice_grande:
-#     print(i)
+# for a in al.possibilities_second:
+#     for i in a:
+#         print(i)
+#     print('')
+# #     # break
 
-# for i in matrice_grande:
-#     print(i, end='\n')
-# print('')
-
-al = algo(T, I, matrice_grande)
-al.place_one_pixel(0, 4, al.matrice)
-al.place_one_pixel(1, 4, al.matrice)
-al.place_piece_and_create_list()
-
-for a in al.possibilities_second:
-    for i in a:
-        print(i)
-    print('')
-#     # break
-
-print(len(al.possibilities_second))
+# print(len(al.possibilities_second))
 
 # for m1 in al.possibilities_second:
 #     for m2 in al.possibilities_second:
