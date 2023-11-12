@@ -54,10 +54,10 @@ class Game:
             block2 = self.Color_piece(gui.pixel(715, 578))
             if (block1 != 'E'):
                 print("Next Block found : " + block1)
-                self.s_piece = block1
+                self.next_piece = block1
             if (block2 != 'E' and block1 == 'E'):
                 print("Next Block found : " + block2)
-                self.s_piece = block2
+                self.next_piece = block2
         
     def get_board_coord(self):
         while(1):
@@ -95,7 +95,7 @@ class Game:
         while (self.actual_piece == old_piece):
             gui.press(direction)
             t.sleep(0.01) #NEED TESTING
-
+            self.get_actual_piece()
 
 
 class Board:
