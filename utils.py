@@ -29,6 +29,21 @@ def comparer_matrices(matrice1, matrice2):
         for j in range(len(matrice1[0])):
             if matrice1[i][j] != matrice2[i][j]:
                 return False
+    return True
+
+def only_zeros_and_twos(matrice):
+    for i in range(len(matrice)):
+        for j in range(len(matrice[0])):
+            if matrice[i][j] != 0 and matrice[i][j] != 2:
+                return False
+    return True
+
+def substract_matrice(matrice1, matrice2):
+    ret_matrice = []
+    for i in range(len(matrice1)):
+        for j in range(len(matrice1[0])):
+            ret_matrice = matrice1[i][j] - matrice2[i][j]
+    return ret_matrice
 
 def test1():
     test = [[0,0,2,0], \

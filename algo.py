@@ -1,10 +1,10 @@
 import time
 import copy
-from utils import comparer_matrices
+from utils import *
 
-
-OVER = 0
-UNDER = 1
+HAUTEUR_MUL = 1
+OMBRE_MUL = 2
+TROUS_MUL = 3
 
 J = [["🍞",'🤍','🤍'],\
      ["🍞","🍞","🍞"]]
@@ -35,6 +35,8 @@ class algo:
     possibilities = []
     possibilities_first = []
     possibilities_second = []
+    possibilities_first_save = []
+    possibilities_second_save = []
 
     
     def __init__(self, curr, next, matrice):
@@ -46,11 +48,15 @@ class algo:
     def place_piece_and_create_list(self):
         self.place_piece_on_piece_all_rotate(self.curr, self.matrice)
         self.possibilities_first = self.possibilities
+        self.possibilities_first_save = copy.deepcopy(self.possibilities_first)
         self.possibilities = []
+        clearlist(self.possibilities_first)
         for matrice in self.possibilities_first:
             self.place_piece_on_piece_all_rotate(self.next, matrice)
             self.possibilities_second += self.possibilities
             self.possibilities = []
+        self.possibilities_second_save = copy.deepcopy(self.possibilities_second)
+        clearlist(self.possibilities_second)
 
 
     def place_piece_on_piece_all_rotate(self, piece, matrice):
@@ -163,6 +169,110 @@ class algo:
     def rotate_piece(self, piece):
         piece_pivotee = [[piece[j][i] for j in range(len(piece))] for i in range(len(piece[0])-1, -1, -1)]
         return piece_pivotee
+    
+    def send_best_map(self):
+        best_map = self.choose_best_map()
+
+        for matrice in self.possibilities_first_save:
+            substract = substract_matrice(self.possibilities_second_save[best_map[2]], matrice)
+            if only_zeros_and_twos(substract):
+                return matrice
+
+
+    def choose_best_map(self):
+
+        best_map = (None, None, None)
+
+        for i in range(len(self.possibilities_second)):
+            score = self.scoring(self.possibilities_second[i])
+            if score < best_map[1]:
+                best_map = (self.possibilities_second[i], score, i)
+        
+        return best_map
+
+    
+    def scoring(self, matrice):
+        somme_hauteur = self.nombres_de_un(matrice)
+        trous = self.valeurs_des_trous(matrice)
+        ombre = self.ombre(matrice)
+
+        sumTrous = sum(trous)
+
+        score = somme_hauteur * HAUTEUR_MUL + sum(trous) * TROUS_MUL + (ombre - sumTrous) * OMBRE_MUL
+        return score
+
+    def nombres_de_un(self, matrice):
+        somme_de_1=0
+        for rangees in (matrice):
+            for case in (rangees):
+                if case==1: #je check si la case est un 1 (vide mais avec une case remplie juste au dessus)
+                    somme_de_1+=1 
+
+        return somme_de_1
+
+    def valeurs_des_trous(self, matrice):
+        # fonction pour check si un 1 touche un 0
+        def touche_0(i, j):
+            if i > 0 and matrice[i - 1][j] == 0 or i < len(matrice) - 1 and matrice[i + 1][j] == 0 or j > 0 and matrice[i][j - 1] == 0 or j < len(matrice[i]) - 1 and matrice[i][j + 1] == 0:
+                return True
+            
+        flag=True
+        while flag: #j'itere le temps qu'il y ai plus de 0 qui touchent de 1
+            flag = False  
+            for i in range(len(matrice)):
+                for j in range(len(matrice[i])):
+                    if matrice[i][j] == 1 and touche_0(i, j):
+                        matrice[i][j] = 0
+                        flag = True
+
+        trous = []
+        index_cases = []
+
+        for i in range(len(matrice)):
+            for j in range(len(matrice[i])):
+                if matrice[i][j] == 1 and (i, j) not in index_cases:
+                    nombre_case_trou = 0
+                    queue = [(i, j)]
+                    index_cases.append((i, j))
+
+                    while queue:
+                        current_i, current_j = queue[0]
+                        nombre_case_trou += 1
+                        queue=[]
+
+                        # je check la case en haut
+                        if current_i > 0 and matrice[current_i - 1][current_j] == 1 and (current_i - 1, current_j) not in index_cases:
+                            queue.append((current_i - 1, current_j))
+                            index_cases.append((current_i - 1, current_j))
+
+                        # check la case en dessous
+                        if current_i < len(matrice) - 1 and matrice[current_i + 1][current_j] == 1 and (current_i + 1, current_j) not in index_cases:
+                            queue.append((current_i + 1, current_j))
+                            index_cases.append((current_i + 1, current_j))
+
+                        # check la case à gauche
+                        if current_j > 0 and matrice[current_i][current_j - 1] == 1 and (current_i, current_j - 1) not in index_cases:
+                            queue.append((current_i, current_j - 1))
+                            index_cases.append((current_i, current_j - 1))
+
+                        # check la case à droite
+                        if current_j < len(matrice[i]) - 1 and matrice[current_i][current_j + 1] == 1 and (current_i, current_j + 1) not in index_cases:
+                            queue.append((current_i, current_j + 1))
+                            index_cases.append((current_i, current_j + 1))
+                        
+
+                    trous.append(nombre_case_trou)
+
+        return trous
+
+    def somme_hauteurs(self, matrice):
+        somme=0
+        for num_rows in range(len(matrice)):
+            for num_columns in range(len(matrice[0])):
+                if matrice[num_rows][num_columns]=="🍞": #je check si la case est remplie ou pas
+                    somme+=len(matrice)-num_rows #comme on commence par le haut il faut faire 21-la rangée
+
+        return somme
 
 
 
