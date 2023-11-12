@@ -1,7 +1,7 @@
 import cv2 as cv
 from enum import Enum
 import pyautogui as gui
-from pynput.keyboard import Key, Listener
+#from pynput.keyboard import Key, Listener
 import time as t
 import utils
 
@@ -18,8 +18,9 @@ class Game:
         self.actual_piece = 'E'
         self.next_piece = 'E'
         self.state = 1
-        self.board_coord = self.get_board_coord()
-    
+        self.board_coord = None
+        self.get_visual_data()
+
     def Color_piece(self, Color):
         match Color:
             case (234, 51, 35):
@@ -97,6 +98,14 @@ class Game:
             t.sleep(0.01) #NEED TESTING
             self.get_actual_piece()
 
+    def get_visual_data(self):
+        self.get_board_coord()
+        start = t.time()
+        while (self.actual_piece == 'E' and self.next_piece == 'E' and t.time() - start < 3):
+            self.get_actual_piece()
+            self.get_next_piece()
+        if (t.time() - start >= 3):
+            print("TIMEOUT PIECES NOT FOUND")
 
 class Board:
     #Block vide -> 0
