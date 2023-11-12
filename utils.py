@@ -34,7 +34,7 @@ def comparer_matrices(matrice1, matrice2):
 def only_zeros_and_twos(matrice):
     for i in range(len(matrice)):
         for j in range(len(matrice[0])):
-            if matrice[i][j] != 0 and matrice[i][j] != 2:
+            if matrice[i][j] != 0 and matrice[i][j] != 2 and matrice[i][j] != 1:
                 return False
     return True
 
