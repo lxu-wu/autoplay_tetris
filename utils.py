@@ -2,47 +2,41 @@
 
 import numpy as np
 
-def match_pattern(big_matrix, small_matrix):
-    # Get the shape of the small matrix
-    small_rows, small_cols = small_matrix.shape
-
-    # Get the shape of the big matrix
-    big_rows, big_cols = big_matrix.shape
-
-    # Iterate over the big matrix
-    for i in range(big_rows - small_rows + 1):
-        for j in range(big_cols - small_cols + 1):
-            # Extract a sub-matrix from the big matrix
-            sub_matrix = big_matrix[i:i+small_rows, j:j+small_cols]
-
-            # Check if the sub-matrix matches the small matrix or any of its rotations
-            for _ in range(4):
-                if np.array_equal(sub_matrix * small_matrix, small_matrix):
-                    print(f"Match found at position ({i}, {j})")
-                    break
-                small_matrix = np.rot90(small_matrix)  # Rotate the small matrix
+def make_shadow(matrice):
+    for i in range(len(matrice[0])):
+        trig = 0
+        for j in range(len(matrice)):
+            if matrice[j][i] == 2:
+                trig = 1
+            if trig == 1 and matrice[j][i] != 2:
+                matrice[j][i] = 1
+    return matrice
 
 def is_full(line):
-    for val in line:
-        if val != 2:
-            return False
-    return True
+    return all(val == 2 for val in line)
+
+def points_line_cleared(matrix):
+    points = 0
+    for line in matrix:
+      if not is_full(line):
+        points += 300
+        #print("LINE CLEARED BONUS")
+    return (points)
 
 def clear(board):
     y = len(board)
     x = len(board[0])
-    for index,line in enumerate(board):
-        if is_full(line):
-            for i in range (index, y):
-                for j in range(0, x):
-                    if board[i][j] == 1 and (index == 0 or (index > 0 and board[index - 1][j] != 2)):
-                        board[i][j] = 0
-            board.remove(board[index])
-            board.insert(0,[0 for i in range(x)])
+    cleared_board = []
+    for index, line in enumerate(board):
+        if not is_full(line):
+            cleared_board.append(line)
+    while len(cleared_board) < y:
+        cleared_board.insert(0, [0 for _ in range(x)])
+    return cleared_board
 
 def clearlist(board_list):
-    for board in board_list:
-        clear(board)
+    for i in range(len(board_list)):
+        board_list[i] = clear(board_list[i])
 
 def comparer_matrices(matrice1, matrice2):
     if len(matrice1) != len(matrice2) or len(matrice1[0]) != len(matrice2[0]):
@@ -53,12 +47,12 @@ def comparer_matrices(matrice1, matrice2):
                 return False
     return True
 
-def change_ones_to_zeros(matrice):
-    for i in range(len(matrice)):
-        for j in range(len(matrice[0])):
-            if matrice[i][j] == 1:
-                matrice[i][j] = 0
-    return matrice
+# def change_ones_to_zeros(matrice):
+#     for i in range(len(matrice)):
+#         for j in range(len(matrice[0])):
+#             if matrice[i][j] == 1:
+#                 matrice[i][j] = 0
+#     return matrice
 
 def only_zeros_and_twos(matrice):
     for i in range(len(matrice)):

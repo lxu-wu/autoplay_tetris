@@ -3,9 +3,9 @@ import time
 import copy
 from utils import *
 
-HAUTEUR_MUL = 1
-OMBRE_MUL = 2
-TROUS_MUL = 3
+HAUTEUR_MUL = 4
+OMBRE_MUL = 3
+TROUS_MUL = 5
 
 J = [[2,0,0],\
      [2,2,2]]
@@ -29,11 +29,6 @@ I = [[2,2,2,2]]
 
 class Algo:
     
-    matrice = None
-    curr = None
-    next = None
-    tmpPossible = []
-
     
     def __init__(self, current, next2, matrice):
         
@@ -58,8 +53,12 @@ class Algo:
         self.curr = letter_to_piece_matrice(current)
         self.next = letter_to_piece_matrice(next2)
         self.matrice = matrice
+        self.tmpPossible = []
         self.possibilities = []
+        self.possibilities_first = []
         self.possibilities_second = []
+        self.possibilities_first_save = []
+        self.possibilities_second_save = []
 
     def place_piece_and_create_list(self):
         self.place_piece_on_piece_all_rotate(self.curr, self.matrice)
@@ -67,12 +66,13 @@ class Algo:
         self.possibilities_first_save = copy.deepcopy(self.possibilities_first)
         self.possibilities = []
         clearlist(self.possibilities_first)
-        for matrice in self.possibilities_first:
-            self.place_piece_on_piece_all_rotate(self.next, matrice)
-            self.possibilities_second += self.possibilities
-            self.possibilities = []
-        self.possibilities_second_save = copy.deepcopy(self.possibilities_second)
-        clearlist(self.possibilities_second)
+
+        # for matrice in self.possibilities_first:
+        #     self.place_piece_on_piece_all_rotate(self.next, matrice)
+        #     self.possibilities_second += self.possibilities
+        #     self.possibilities = []
+        # self.possibilities_second_save = copy.deepcopy(self.possibilities_second)
+        # clearlist(self.possibilities_second)
 
 
     def place_piece_on_piece_all_rotate(self, piece, matrice):
@@ -117,18 +117,18 @@ class Algo:
             return 0
 
         try:
-            if self.check_can_place_under_shadow(x, y + Hauteur - 1, Hauteur, Largeur, piece, matrice) == 0:
-                return 0
-            if self.check_playable(x, y, Hauteur, Largeur, piece, matrice) == 0:
-                return 0
-            y = self.check_downable(x, y, Hauteur, Largeur, piece, matrice)
+            # if self.check_can_place_under_shadow(x, y + Hauteur - 1, Hauteur, Largeur, piece, matrice) == 0:
+            #     return 0
+            # if self.check_playable(x, y, Hauteur, Largeur, piece, matrice) == 0:
+            #     return 0
+            # y = self.check_downable(x, y, Hauteur, Largeur, piece, matrice)
             # print("y = ", y)
             for yPiece in range(Hauteur)[::-1]:
                 for xPiece in range(Largeur):
                     # self.place_one_pixel(x + xPiece, y + yPiece, matrice)
-                        if piece[yPiece][xPiece] == 2  and matrice[y + yPiece][x + xPiece] != 2 :
+                        if piece[yPiece][xPiece] == 2  and matrice[y + yPiece][x + xPiece] == 0 :
                             self.place_one_pixel(x + xPiece, y + yPiece, matrice)
-                        elif piece[yPiece][xPiece] == 2  and matrice[y + yPiece][x + xPiece] == 2 :
+                        elif piece[yPiece][xPiece] == 2  and matrice[y + yPiece][x + xPiece] != 0 :
                             return 0
                         # for i in matrice:
                         #     print(i)
@@ -189,39 +189,42 @@ class Algo:
     def send_best_map(self):
         best_map = self.choose_best_map()
         
-        map_without_ones = change_ones_to_zeros(copy.deepcopy(self.possibilities_second_save[best_map[2]]))
+        # map_without_ones = change_ones_to_zeros(copy.deepcopy(self.possibilities_second_save[best_map[2]]))
 
-        for matrice in self.possibilities_first_save:
-            substract = substract_matrice(map_without_ones, change_ones_to_zeros(copy.deepcopy(matrice)))
+        # for matrice in self.possibilities_first_save:
+        #     substract = substract_matrice(map_without_ones, change_ones_to_zeros(copy.deepcopy(matrice)))
             
             
-            if match_pattern(substract, self.next_piece):
-                return matrice
-        print("±±±±±±±±±±±±±±±±±±±±±±±TU EST UN CONNARD±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±")
+        #     if match_pattern(substract, self.next):
+        #         return matrice
+        # print("±±±±±±±±±±±±±±±±±±±±±±±TU EST UN CONNARD±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±")
+
+        return self.possibilities_first_save[best_map[2]]
 
 
     def choose_best_map(self):
 
         best_map = (None, None, None)
 
-        for i in range(len(self.possibilities_second)):
-            score = self.scoring(self.possibilities_second[i])
+        for i in range(len(self.possibilities_first)):
+            score = self.scoring(copy.deepcopy(self.possibilities_first[i]))
             if best_map == (None, None, None):
-                best_map = (self.possibilities_second[i], score, i)
+                best_map = (self.possibilities_first[i], score, i)
             if score < best_map[1]:
-                best_map = (self.possibilities_second[i], score, i)
-        
+                best_map = (self.possibilities_first[i], score, i)
+        # print("SCORE :", best_map[1])
         return best_map
 
     
     def scoring(self, matrice):
-        somme_hauteur = self.nombres_de_un(matrice)
+        somme_hauteur = self.somme_hauteurs(matrice)
         trous = self.valeurs_des_trous(matrice)
         ombre = self.nombres_de_un(matrice)
 
         sumTrous = sum(trous)
 
-        score = somme_hauteur * HAUTEUR_MUL + sum(trous) * TROUS_MUL + (ombre - sumTrous) * OMBRE_MUL
+        score = (somme_hauteur ** 2 * HAUTEUR_MUL) + (sum(trous) ** 1.4 * TROUS_MUL) + ((ombre - sumTrous)** 0.9 * OMBRE_MUL)
+        #score -= points_line_cleared(matrice)
         return score
 
     def nombres_de_un(self, matrice):
@@ -236,24 +239,24 @@ class Algo:
     def valeurs_des_trous(self, matrice):
         # fonction pour check si un 1 touche un 0
         def touche_0(i, j):
-            if i > 0 and matrice[i - 1][j] == 0 or i < len(matrice) - 1 and matrice[i + 1][j] == 0 or j > 0 and matrice[i][j - 1] == 0 or j < len(matrice[i]) - 1 and matrice[i][j + 1] == 0:
+            if i > 0 and tmp_matrice[i - 1][j] == 0 or i < len(tmp_matrice) - 1 and tmp_matrice[i + 1][j] == 0 or j > 0 and tmp_matrice[i][j - 1] == 0 or j < len(tmp_matrice[i]) - 1 and tmp_matrice[i][j + 1] == 0:
                 return True
-            
+        tmp_matrice = copy.deepcopy(matrice)
         flag=True
         while flag: #j'itere le temps qu'il y ai plus de 0 qui touchent de 1
             flag = False  
-            for i in range(len(matrice)):
-                for j in range(len(matrice[i])):
-                    if matrice[i][j] == 1 and touche_0(i, j):
-                        matrice[i][j] = 0
+            for i in range(len(tmp_matrice)):
+                for j in range(len(tmp_matrice[i])):
+                    if tmp_matrice[i][j] == 1 and touche_0(i, j):
+                        tmp_matrice[i][j] = 0
                         flag = True
 
         trous = []
         index_cases = []
 
-        for i in range(len(matrice)):
-            for j in range(len(matrice[i])):
-                if matrice[i][j] == 1 and (i, j) not in index_cases:
+        for i in range(len(tmp_matrice)):
+            for j in range(len(tmp_matrice[i])):
+                if tmp_matrice[i][j] == 1 and (i, j) not in index_cases:
                     nombre_case_trou = 0
                     queue = [(i, j)]
                     index_cases.append((i, j))
@@ -264,22 +267,22 @@ class Algo:
                         queue=[]
 
                         # je check la case en haut
-                        if current_i > 0 and matrice[current_i - 1][current_j] == 1 and (current_i - 1, current_j) not in index_cases:
+                        if current_i > 0 and tmp_matrice[current_i - 1][current_j] == 1 and (current_i - 1, current_j) not in index_cases:
                             queue.append((current_i - 1, current_j))
                             index_cases.append((current_i - 1, current_j))
 
                         # check la case en dessous
-                        if current_i < len(matrice) - 1 and matrice[current_i + 1][current_j] == 1 and (current_i + 1, current_j) not in index_cases:
+                        if current_i < len(tmp_matrice) - 1 and tmp_matrice[current_i + 1][current_j] == 1 and (current_i + 1, current_j) not in index_cases:
                             queue.append((current_i + 1, current_j))
                             index_cases.append((current_i + 1, current_j))
 
                         # check la case à gauche
-                        if current_j > 0 and matrice[current_i][current_j - 1] == 1 and (current_i, current_j - 1) not in index_cases:
+                        if current_j > 0 and tmp_matrice[current_i][current_j - 1] == 1 and (current_i, current_j - 1) not in index_cases:
                             queue.append((current_i, current_j - 1))
                             index_cases.append((current_i, current_j - 1))
 
                         # check la case à droite
-                        if current_j < len(matrice[i]) - 1 and matrice[current_i][current_j + 1] == 1 and (current_i, current_j + 1) not in index_cases:
+                        if current_j < len(tmp_matrice[i]) - 1 and tmp_matrice[current_i][current_j + 1] == 1 and (current_i, current_j + 1) not in index_cases:
                             queue.append((current_i, current_j + 1))
                             index_cases.append((current_i, current_j + 1))
                         
@@ -293,17 +296,18 @@ class Algo:
         for num_rows in range(len(matrice)):
             for num_columns in range(len(matrice[0])):
                 if matrice[num_rows][num_columns]==2: #je check si la case est remplie ou pas
-                    somme+=len(matrice)-num_rows #comme on commence par le haut il faut faire 21-la rangée
+                    somme+=((len(matrice)-num_rows)) #comme on commence par le haut il faut faire len matrice-la rangée
 
         return somme
     
-    def rotations_(self,matrice_before, matrice_after, piece):
+    def rotations(self,matrice_before, matrice_after, piece):
         total_index=[]
         row_piece=[]
         piece_after=[]
         actions=[]
         matrice_bis_before = copy.deepcopy(matrice_before)
         matrice_bis_after = copy.deepcopy(matrice_after)
+        #print(somme_hauteurs(matrice_before))
 
         #Change the 1 into 0
         for i in range(len(matrice_bis_before)):
@@ -319,7 +323,7 @@ class Algo:
             if row_piece!=[]:
                 piece_after.append(row_piece)
                 row_piece=[]
-        print(piece_after)
+        #print(piece_after)
         # print(total_index)
 
         #Find which rotations has been applied
@@ -327,43 +331,38 @@ class Algo:
             if len(piece_after)==4:
                 actions.append('up')
 
-        if piece == O: 
+        elif piece == O: 
             pass
         
-
-        if piece == L: 
+        
+        elif piece == L: 
             if len(piece_after)==2:
-
                 if piece_after[0]==[2,2,2]:
                     actions.append('up')
                     actions.append('up')
-                    
             else:
-                if (total_index[0][0],total_index[0][1]) == (total_index[1][0],total_index[1][1]+1):
+                if len(piece_after[0])==2:
                     actions.append('up')
 
-                else:
+                elif len(piece_after[2])==2:
                     actions.append('up')
                     actions.append('up')
                     actions.append('up')	
 
-        if piece == J: 
-            
+        elif piece == J: 
             if len(piece_after)==2:
-                
                 if piece_after[0]==[2,2,2]:
                     actions.append('up')
                     actions.append('up')
             else:
-                
-                if (total_index[0][0],total_index[0][1]) == (total_index[1][0],total_index[1][1]+1):
+                if len(piece_after[0])==2:
                     actions.append('up')
                     actions.append('up')
                     actions.append('up')
-                else:
+                elif len(piece_after[2])==2:
                     actions.append('up')
 
-        if piece == T: 
+        elif piece == T: 
             
             if piece_after[0]==[2,2,2]:
                 actions.append('up')
@@ -378,12 +377,12 @@ class Algo:
                     actions.append('up')
                     actions.append('up')
 
-        if piece == Z:
+        elif piece == Z:
             
             if len(piece_after)==3:
                 actions.append('up')
             
-        if piece == S:
+        elif piece == S:
             if len(piece_after)==3:
                 actions.append('up')
         return actions
@@ -417,84 +416,84 @@ class Algo:
                     row_piece.append(matrice_bis_after[i][j])
                     total_index.append((i,j))
     
-        actions = self.rotations_(matrice_before, matrice_after, piece)
-        for i in range(12): #déplacement après rotation, pour être sures on se déplace beeeeeeeaucoup vers la gauche
+        actions = self.rotations(matrice_before, matrice_after, piece)
+        for i in range(7): #déplacement après rotation
             actions.append('left') 
-        special_insertion = False
-        for i,j in total_index:
-            if (matrice_before[i][j] != 0):
-                special_insertion = True
+        # special_insertion = False
+        # for i,j in total_index:
+        #     if (matrice_before[i][j] != 0):
+        #         special_insertion = True
 
         column_index=[]
         row_index=[]  
         for indexes in total_index:
             column_index.append(indexes[1])
             row_index.append(indexes[0])
-        #row_index_min=min(row_index)
-        #if special_insertion: 
-        #    for i in range(len(matrice_before[0])):
-        #        for j in range(len(matrice_before)-1):
-        #            if row_index_min==j+1:
-        #                position=(i,j)
-        #               return (actions, position, "left" if column_index > j else "right")
+        # row_index_min=min(row_index)
+        # if special_insertion: 
+        #     for i in range(len(matrice_before[0])):
+        #         for j in range(len(matrice_before)-1):
+        #             if row_index_min==j+1:
+        #                 position=(i,j)
+        #                 return (actions, position, "left" if min(column_index) > j else "right")
                         
-        #            elif matrice_before[j+1][i]==2:
-        #                break
+        #             elif matrice_before[j+1][i]==2:
+        #                 break
         for i in range(min(column_index)):
             actions.append("right")
         actions.append("space")
         return(actions, (0, 0), None) #TODO
 
-Hauteur = 22
-Largeur = 12
-matrice_grande = [[0  for _ in range(Largeur)] for _ in range(Hauteur)]
+# Hauteur = 22
+# Largeur = 12
+# matrice_grande = [[0  for _ in range(Largeur)] for _ in range(Hauteur)]
 
-# # for i in matrice_grande:
-# #     print(i)
+# # # for i in matrice_grande:
+# # #     print(i)
 
-# # for i in matrice_grande:
-# #     print(i, end='\n')
-# # print('')
+# # # for i in matrice_grande:
+# # #     print(i, end='\n')
+# # # print('')
 
-al = Algo("Z", "O", copy.deepcopy(matrice_grande))
-al.place_one_pixel(0, 21, al.matrice)
-al.place_one_pixel(1, 21, al.matrice)
-al.place_one_pixel(2, 21, al.matrice)
-al.place_one_pixel(1, 20, al.matrice)
+# al = Algo("Z", "O", copy.deepcopy(matrice_grande))
+# al.place_one_pixel(0, 21, al.matrice)
+# al.place_one_pixel(1, 21, al.matrice)
+# al.place_one_pixel(2, 21, al.matrice)
+# al.place_one_pixel(1, 20, al.matrice)
 
-# al.actions_rotatation_position(matrice_grande, al.matrice, 0)
-al.place_piece_and_create_list()
+# # al.actions_rotatation_position(matrice_grande, al.matrice, 0)
+# al.place_piece_and_create_list()
 
-# for a in al.matrice:
-#     print(a)
+# # for a in al.matrice:
+# #     print(a)
+
+# # print()
+
+# map = al.send_best_map()
+
+# # for a in map:
+# #     print(a)
 
 # print()
 
-map = al.send_best_map()
+# al = Algo("I", "T", map)
+# al.place_piece_and_create_list()
 
-# for a in map:
-#     print(a)
+# # for a in al.send_best_map():
+# #     print(a)
+# # for a in al.possibilities_first:
+# #     # print(a)
+# #     for i in a:
+# #         print(i)
+# #     print()
+# # #     # break
 
-print()
+# # print(len(al.possibilities_second))
 
-al = Algo("I", "T", map)
-al.place_piece_and_create_list()
-
-# for a in al.send_best_map():
-#     print(a)
-# for a in al.possibilities_first:
-#     # print(a)
-#     for i in a:
-#         print(i)
-#     print()
-# #     # break
-
-# print(len(al.possibilities_second))
-
-# for m1 in al.possibilities_second:
-#     for m2 in al.possibilities_second:
-#         if m1 != m2:
-#             if comparer_matrices(m1, m2):
-#                 print(m1)
-#                 print(m2)
+# # for m1 in al.possibilities_second:
+# #     for m2 in al.possibilities_second:
+# #         if m1 != m2:
+# #             if comparer_matrices(m1, m2):
+# #                 print(m1)
+# #                 print(m2)
     

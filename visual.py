@@ -20,6 +20,7 @@ class Game:
         self.board_coord = None
         self.matrice = [[0  for _ in range(Game.H_SIZE)] for _ in range(Game.V_SIZE)]
         self.get_visual_data()
+        gui.PAUSE = 0
 
     def Color_piece(self, Color):
         match Color:
@@ -44,20 +45,20 @@ class Game:
             block1 = self.Color_piece(gui.pixel(1106, 191))
             block2 = self.Color_piece(gui.pixel(1102, 229))
             if (block1 != 'E'):
-                print("Current Block found : " + block1)
+                # print("Current Block found : " + block1)
                 self.actual_piece = block1
             if (block2 != 'E' and block1 == 'E'):
-                print("Current Block found : " + block2)
+                # print("Current Block found : " + block2)
                 self.actual_piece = block2
 
     def get_next_piece(self):
             block1 = self.Color_piece(gui.pixel(713, 545))
             block2 = self.Color_piece(gui.pixel(715, 578))
             if (block1 != 'E'):
-                print("Next Block found : " + block1)
+                # print("Next Block found : " + block1)
                 self.next_piece = block1
             if (block2 != 'E' and block1 == 'E'):
-                print("Next Block found : " + block2)
+                # print("Next Block found : " + block2)
                 self.next_piece = block2
         
     def get_board_coord(self):
@@ -95,24 +96,25 @@ class Game:
         old_piece = self.actual_piece
         while (self.actual_piece == old_piece):
             gui.press(direction)
-            t.sleep(0.01) #NEED TESTING
             self.get_actual_piece()
 
     def get_visual_data(self):
         self.get_board_coord()
         gui.click(self.board_coord.left + 160, self.board_coord.top + 90)
         start = t.time()
-        while (self.actual_piece == 'E' and self.next_piece == 'E' and t.time() - start < 3):
+        while (self.actual_piece == 'E' and self.next_piece == 'E' and t.time() - start < 2):
             self.get_actual_piece()
             self.get_next_piece()
-        if (t.time() - start >= 3):
+            t.sleep(0.1)
+        if (t.time() - start >= 2):
             print("TIMEOUT PIECES NOT FOUND")
 
     def update_pieces(self):
         start = t.time()
         old_piece = self.actual_piece
-        while (old_piece == self.actual_piece and t.time() - start < 3):
+        while (old_piece == self.actual_piece and t.time() - start < 2):
             self.get_actual_piece()
             self.get_next_piece()
-        if (t.time() - start >= 3):
+            t.sleep(0.1)
+        if (t.time() - start >= 2):
             print("TIMEOUT PIECES NOT FOUND")
