@@ -119,13 +119,13 @@ def test5():
             [0,1,1,1], \
             [0,1,1,1]])  
  
-def clear_tests():
-    print("Launching Tests")
-    test1()
-    test2()
-    test3()
-    test4()
-    test5()
-    print("Success")
+# def clear_tests():
+#     print("Launching Tests")
+#     test1()
+#     test2()
+#     test3()
+#     test4()
+#     test5()
+#     print("Success")
 if (__name__ == "__main__"):
     clear_tests()

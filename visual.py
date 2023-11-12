@@ -65,10 +65,10 @@ class Game:
         while(1):
             try:
                 self.board_coord = gui.locateOnScreen('game.png', grayscale=True, confidence=0.9)
-                print("Success : Board found")
+                # print("Success : Board found")
                 break
             except:
-                print("Fail during board recognition, trying again in 3 seconds...")
+                # print("Fail during board recognition, trying again in 3 seconds...")
                 t.sleep(3)
 
     def get_cell(self, x, y):
@@ -107,7 +107,8 @@ class Game:
             self.get_next_piece()
             t.sleep(0.1)
         if (t.time() - start >= 2):
-            print("TIMEOUT PIECES NOT FOUND")
+            pass
+            # print("TIMEOUT PIECES NOT FOUND")
 
     def update_pieces(self):
         start = t.time()
@@ -117,4 +118,5 @@ class Game:
             self.get_next_piece()
             t.sleep(0.1)
         if (t.time() - start >= 2):
-            print("TIMEOUT PIECES NOT FOUND")
+            pass
+            # print("TIMEOUT PIECES NOT FOUND")

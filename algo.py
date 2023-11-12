@@ -3,9 +3,9 @@ import time
 import copy
 from utils import *
 
-HAUTEUR_MUL = 4
-OMBRE_MUL = 3
-TROUS_MUL = 5
+HAUTEUR_MUL = 7
+OMBRE_MUL = 5
+TROUS_MUL = 9
 
 J = [[2,0,0],\
      [2,2,2]]
@@ -223,7 +223,7 @@ class Algo:
 
         sumTrous = sum(trous)
 
-        score = (somme_hauteur ** 2 * HAUTEUR_MUL) + (sum(trous) ** 1.4 * TROUS_MUL) + ((ombre - sumTrous)** 0.9 * OMBRE_MUL)
+        score = (somme_hauteur ** 2 * HAUTEUR_MUL) + (sum(trous) ** 1.2 * TROUS_MUL) + ((ombre - sumTrous) ** 0.9 * OMBRE_MUL)
         #score -= points_line_cleared(matrice)
         return score
 
