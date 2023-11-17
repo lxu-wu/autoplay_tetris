@@ -1,131 +1,101 @@
 #from visual import Game
 
 import numpy as np
-
-def make_shadow(matrice):
-    for i in range(len(matrice[0])):
-        trig = 0
-        for j in range(len(matrice)):
-            if matrice[j][i] == 2:
-                trig = 1
-            if trig == 1 and matrice[j][i] != 2:
-                matrice[j][i] = 1
-    return matrice
+import copy
+import unittest
+# Define Tetris pieces
 
 def is_full(line):
-    return all(val == 2 for val in line)
+	return all(val == 2 for val in line)
 
-def points_line_cleared(matrix):
-    points = 0
-    for line in matrix:
-      if not is_full(line):
-        points += 300
-        #print("LINE CLEARED BONUS")
-    return (points)
+def clear_shadow(matrix):
+	for i in range(len(matrix)):
+		for j in range(len(matrix[i])):
+			if (matrix[i][j] == 1 and i > 0 and matrix[i - 1][j] == 0):
+				matrix[i][j] = 0
 
 def clear(board):
-    y = len(board)
-    x = len(board[0])
-    cleared_board = []
-    for index, line in enumerate(board):
-        if not is_full(line):
-            cleared_board.append(line)
-    while len(cleared_board) < y:
-        cleared_board.insert(0, [0 for _ in range(x)])
-    return cleared_board
-
+	y = len(board)
+	x = len(board[0])
+	cleared_board = []
+	for index, line in enumerate(board):
+		if not is_full(line):
+			cleared_board.append(line)
+	while len(cleared_board) < y:
+		cleared_board.insert(0, [0 for _ in range(x)])
+	#retirer les ombres qui ne sont plus des ombres
+	clear_shadow(cleared_board)
+	return cleared_board
+			
 def clearlist(board_list):
-    for i in range(len(board_list)):
-        board_list[i] = clear(board_list[i])
+	for i in range(len(board_list)):
+		board_list[i] = clear(board_list[i])
 
 def comparer_matrices(matrice1, matrice2):
-    if len(matrice1) != len(matrice2) or len(matrice1[0]) != len(matrice2[0]):
-        return False
-    for i in range(len(matrice1)):
-        for j in range(len(matrice1[0])):
-            if matrice1[i][j] != matrice2[i][j]:
-                return False
-    return True
+	if len(matrice1) != len(matrice2) or len(matrice1[0]) != len(matrice2[0]):
+		return False
+	for i in range(len(matrice1)):
+		for j in range(len(matrice1[0])):
+			if matrice1[i][j] != matrice2[i][j]:
+				return False
+	return True
 
-# def change_ones_to_zeros(matrice):
-#     for i in range(len(matrice)):
-#         for j in range(len(matrice[0])):
-#             if matrice[i][j] == 1:
-#                 matrice[i][j] = 0
-#     return matrice
+def change_ones_to_zeros(matrice):
+	new_matrice = my_copy(matrice)
+	for i in range(len(new_matrice)):
+		for j in range(len(new_matrice[i])):
+			if new_matrice[i][j] == 1:
+				new_matrice[i][j] = 0
+	return new_matrice
 
 def only_zeros_and_twos(matrice):
-    for i in range(len(matrice)):
-        for j in range(len(matrice[0])):
-            if matrice[i][j] != 0 and matrice[i][j] != 2 and matrice[i][j] != 1:
-                return False
-    return True
+	for i in range(len(matrice)):
+		for j in range(len(matrice[0])):
+			if matrice[i][j] != 0 and matrice[i][j] != 2 and matrice[i][j] != 1:
+				return False
+	return True
 
-def substract_matrice(matrice1, matrice2):
-    ret_matrice = []
-    for i in range(len(matrice1)):
-        row = []
-        for j in range(len(matrice1[0])):
-            row.append(matrice1[i][j] - matrice2[i][j])
-        ret_matrice.append(row)
-    return ret_matrice
+def my_copy(mat):
+    return [row[:] for row in mat]
 
-def test1():
-    test = [[0,0,2,0], \
-             [2,2,2,2], \
-             [1,1,1,1]]
-    clear(test)
-    assert(test == 
-           [[0,0,0,0], \
-            [0,0,2,0], \
-            [0,0,1,0]])
+class clear_test(unittest.TestCase):
 
-def test2():
-    test = [[2,2,2,2], \
-            [2,2,2,2], \
-            [2,2,2,2]]
-    clear(test)
-    assert(test == 
-           [[0,0,0,0], \
-            [0,0,0,0], \
-            [0,0,0,0]])
+	def test_empty_matrix(self):
+		matrice = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+		self.assertEqual(matrice, clear(matrice))
 
-def test3():
-    test = [[2,2,2,2], \
-            [1,1,1,1], \
-            [1,1,1,1]]
-    clear(test)
-    assert(test == 
-           [[0,0,0,0], \
-            [0,0,0,0], \
-            [0,0,0,0]])
+	def test_clear_above(self):
+		matrice = [[2, 2, 2], [2, 1, 2], [2, 2, 2]]
+		final_matrice = [[0, 0, 0], [0, 0, 0], [2, 0, 2]]
+		self.assertEqual(clear(matrice), final_matrice)
 
-def test4():
-    test = [[0,2,2,2], \
-            [0,1,1,1], \
-            [0,1,1,1]]
-    clear(test)
-    assert(test == 
-           [[0,2,2,2], \
-            [0,1,1,1], \
-            [0,1,1,1]])
-def test5():
-    test = [[2,2,2,0], \
-            [0,1,1,1], \
-            [0,1,1,1]]
-    clear(test)
-    assert(test == 
-           [[2,2,2,0], \
-            [0,1,1,1], \
-            [0,1,1,1]])  
- 
-# def clear_tests():
-#     print("Launching Tests")
-#     test1()
-#     test2()
-#     test3()
-#     test4()
-#     test5()
-#     print("Success")
-if (__name__ == "__main__"):
-    clear_tests()
+	def test_shadow_clear(self):
+		matrice = [[2, 2, 2], [1, 1, 1], [1, 1, 1]]
+		final_matrice = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+		self.assertEqual(clear(matrice), final_matrice)
+
+	def test_clear_below(self):
+		matrice = [[0, 0, 0], [2, 0, 2], [2, 2, 2]]
+		final_matrice = [[0, 0, 0], [0, 0, 0], [2, 0, 2]]
+		self.assertEqual(clear(matrice), final_matrice)
+
+class my_copy_test(unittest.TestCase):
+	def test_copy(self):
+		matrice1 = [[1, 2]]
+		matrice2 = my_copy(matrice1)
+		self.assertEqual(matrice1, matrice2)
+	def test_change(self):
+		matrice1 = [[1, 2]]
+		matrice2 = my_copy(matrice1)
+		matrice2[0][0] = 0
+		self.assertNotEqual(matrice1, matrice2)
+	def test_change_completely(self):
+		matrice1 = [[1, 2]]
+		matrice2 = my_copy(matrice1)
+		matrice2 = [[0, 0]]
+		self.assertNotEqual(matrice1, matrice2)
+
+
+if __name__ == '__main__':
+	unittest.main()
+	my_copy_test()
