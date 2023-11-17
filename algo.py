@@ -186,5 +186,28 @@ def check_execution_time():
 	bestMap = algorithm.send_best_map()
 	print("EXECUTION TIME : ", time.time() - start)
 
-if __name__ == '__main__':
-	check_execution_time()
+# def check_insertion():
+# 	matrice = [[0  for _ in range(12)] for _ in range(22)]
+# 	algorithm = Algo('S', 'J', matrice)
+# 	algorithm.place_piece_and_create_list()
+# 	bestMap = algorithm.send_best_map()
+# 	algorithm = Algo('J', 'J', bestMap)
+# 	algorithm.place_piece_and_create_list()
+# 	bestMap = algorithm.send_best_map()
+# 	print_mat_fun(bestMap)
+
+# def print_mat_fun(matrice):
+# 	for row in matrice:
+# 		print("[",end="")
+# 		for cell in row:
+# 			if (cell == 0):
+# 				print("⬜️", end="")
+# 			elif (cell == 1):
+# 				print("⬛️", end="")
+# 			elif (cell == 2):
+# 				print("🟥", end="")
+# 		print("]")
+
+# if __name__ == '__main__':
+# 	#check_execution_time()
+# 	check_insertion()

@@ -15,7 +15,7 @@ def print_mat(matrix):
 def play():
 	Tetris = Game()
 	matrice = [[0  for _ in range(12)] for _ in range(22)]
-	while (1):
+	while (Tetris.state):
 		algorithm = Algo(Tetris.actual_piece, Tetris.next_piece, matrice)
 		algorithm.place_piece_and_create_list()
 		bestMap = algorithm.send_best_map()

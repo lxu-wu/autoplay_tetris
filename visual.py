@@ -7,7 +7,7 @@ import utils
 
 class Game:
 
-	SCALING = 2.75
+	SCALING = 1 + 1.75
 	H_SIZE = 12
 	V_SIZE = 22
 	WHITE_COLUMN = 15 * SCALING
@@ -110,7 +110,9 @@ class Game:
 
 	def get_visual_data(self):
 		self.get_board_coord()
-		gui.click(self.board_coord.left + 160, self.board_coord.top + 120)
+		x = int(59 * Game.SCALING)
+		y = int(44 * Game.SCALING)
+		gui.click(self.board_coord.left + x, self.board_coord.top + y)
 		start = t.time()
 		while (self.actual_piece == 'E' and self.next_piece == 'E' and t.time() - start < 2):
 			self.get_actual_piece()
@@ -120,6 +122,15 @@ class Game:
 			pass
 			# print("TIMEOUT PIECES NOT FOUND")
 
+	def look_for_end_game(self):
+		try:
+			gui.locateOnScreen('end_game.png', grayscale=True, confidence=0.5)
+			gui.write("TheAmazingBOT")
+			gui.press("enter")
+			self.state = 0
+		except:
+			pass
+
 	def update_pieces(self):
 		start = t.time()
 		old_piece = self.actual_piece
@@ -127,6 +138,7 @@ class Game:
 			self.get_actual_piece()
 			self.get_next_piece()
 			t.sleep(0.01)
+		self.look_for_end_game()
 		if (t.time() - start >= 2):
 			pass
 			# print("TIMEOUT PIECES NOT FOUND")

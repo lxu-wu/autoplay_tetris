@@ -15,7 +15,6 @@ class Score:
 		self.hole = 0
 		self.shade = 0
 		self.cleared_lines = 0
-		self.height_diff = 0
 
 	def get_scoring_data(self, matrice):
 		after_matrice = clear(matrice)
