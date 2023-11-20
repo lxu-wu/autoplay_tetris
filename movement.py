@@ -138,8 +138,8 @@ def deplacement_pieces(matrice_before, matrice_after, piece):
 	# 				break
 	for i in range(min(column_index)):
 		actions.append("right")
-	# for j in range(max(row_index)):
-	# 	actions.append("down")
+	for j in range(max(row_index)):
+		actions.append("down")
 	return(actions, (0, 0), None)
 
 # def find_camera_insertion(matrice_before, column_indexes, row_indexes):

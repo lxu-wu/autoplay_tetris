@@ -21,7 +21,6 @@ def play():
 		bestMap = algorithm.send_best_map()
 		tuple = deplacement_pieces(matrice, bestMap, algorithm.curr)
 		gui.press(tuple[0])
-		gui.press('space')
 		Tetris.update_pieces()
 		matrice = clear(bestMap)
 

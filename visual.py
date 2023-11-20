@@ -4,6 +4,7 @@ import pyautogui as gui
 #from pynput.keyboard import Key, Listener
 import time as t
 import utils
+import copy
 
 class Game:
 
@@ -21,7 +22,7 @@ class Game:
 		self.board_coord = None
 		self.matrice = [[0  for _ in range(Game.H_SIZE)] for _ in range(Game.V_SIZE)]
 		self.get_visual_data()
-		gui.PAUSE = 0
+		gui.PAUSE = 0.05
 
 	def Color_piece(self, Color):
 		match Color:
@@ -49,11 +50,14 @@ class Game:
 			block1 = self.Color_piece(gui.pixel(x, y))
 			block2 = self.Color_piece(gui.pixel(x, y2))
 			if (block1 != 'E'):
-				# print("Current Block found : " + block1)
+				print("Current Block found : " + block1)
 				self.actual_piece = block1
+				return (1)
 			if (block2 != 'E' and block1 == 'E'):
-				# print("Current Block found : " + block2)
+				print("Current Block found : " + block2)
 				self.actual_piece = block2
+				return (1)
+			return (0)
 
 	def get_next_piece(self):
 			x = int(self.board_coord.left + 51 * Game.SCALING)
@@ -62,10 +66,10 @@ class Game:
 			block1 = self.Color_piece(gui.pixel(x, y))
 			block2 = self.Color_piece(gui.pixel(x, y2))
 			if (block1 != 'E'):
-				# print("Next Block found : " + block1)
+				print("Next Block found : " + block1)
 				self.next_piece = block1
 			if (block2 != 'E' and block1 == 'E'):
-				# print("Next Block found : " + block2)
+				print("Next Block found : " + block2)
 				self.next_piece = block2
 		
 	def get_board_coord(self):
@@ -113,13 +117,7 @@ class Game:
 		x = int(59 * Game.SCALING)
 		y = int(44 * Game.SCALING)
 		gui.click(self.board_coord.left + x, self.board_coord.top + y)
-		start = t.time()
-		while (self.actual_piece == 'E' and self.next_piece == 'E' and t.time() - start < 2):
-			self.get_actual_piece()
-			self.get_next_piece()
-			t.sleep(0.01)
-		if (t.time() - start >= 2):
-			pass
+		self.update_pieces()
 			# print("TIMEOUT PIECES NOT FOUND")
 
 	def look_for_end_game(self):
@@ -132,16 +130,10 @@ class Game:
 			pass
 
 	def update_pieces(self):
-		start = t.time()
-		old_piece = self.actual_piece
-		while (old_piece == self.actual_piece and t.time() - start < 2):
-			self.get_actual_piece()
-			self.get_next_piece()
-			t.sleep(0.01)
-		self.look_for_end_game()
-		if (t.time() - start >= 2):
-			pass
-			# print("TIMEOUT PIECES NOT FOUND")
+		while (self.get_actual_piece() == 0):
+			t.sleep(0.05)
+		self.get_next_piece()
+		#self.look_for_end_game()
 
 if __name__ == '__main__':
 	Test = Game()
